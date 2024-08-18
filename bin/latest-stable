@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source $(dirname $0)/utils.bash
+
+get_latest_release() {
+  curl -sD - "${GH_REPO}/releases/latest" \
+    | sed -n -e "s/^location: *//p"
+}
+
+latest_url=$(get_latest_release)
+
+if [[ "${latest_url}" == "${GH_REPO}/releases" ]]; then
+  list_all_versions | tail -n1
+else
+  basename $latest_url | sed 's/^v//' | tr -d '[:space:]'
+fi

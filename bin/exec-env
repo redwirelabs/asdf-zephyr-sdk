@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+export ZEPHYR_SDK_INSTALL_DIR=$ASDF_INSTALL_PATH
+export ZEPHYR_TOOLCHAIN_VARIANT=zephyr

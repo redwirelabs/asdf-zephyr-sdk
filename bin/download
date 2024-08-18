@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source "$(dirname -- "$0")/utils.bash"
+
+download() {
+  local url=$1
+  local destination=$2
+
+  curl -fsL $url -o $destination
+}
+
+download_toolchain() {
+  local version=$1
+  local destination=$2
+
+  local arch=$(get_arch)
+  local platform=$(get_platform)
+  local url="${GH_REPO}/releases/download/v${version}/zephyr-sdk-${version}_${platform}-${arch}.tar.xz"
+
+  info "Downloading version ${version} from ${url}"
+  download $url $destination \
+    || fail "Unable to download $(basename $url)"
+}
+
+maybe_download_hosttools() {
+  local version=$1
+  local destination=$2
+
+  local arch=$(get_arch)
+  local platform=$(get_platform)
+
+  if [[ $platform == "linux" ]]; then
+    local url="${GH_REPO}/releases/download/v${version}/hosttools_linux-${arch}.tar.xz"
+    download $url $destination \
+      || fail "Unable to download $(basename $url)"
+  fi
+}
+
+download_toolchain \
+  $ASDF_INSTALL_VERSION \
+  $ASDF_DOWNLOAD_PATH/zephyr-sdk-$ASDF_INSTALL_VERSION.tar.xz
+
+maybe_download_hosttools \
+  $ASDF_INSTALL_VERSION \
+  $ASDF_DOWNLOAD_PATH/hosttools-$ASDF_INSTALL_VERSION.tar.xz

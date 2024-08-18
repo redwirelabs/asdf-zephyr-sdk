@@ -1,0 +1,27 @@
+name: tests
+
+on: push
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout asdf-zephyr-sdk plugin
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+      - name: Install asdf
+        uses: actions/checkout@v4
+        with:
+          repository: asdf-vm/asdf
+          path: .asdf
+          ref: v0.14.0
+      - name: Test asdf-zephyr-sdk plugin
+        run: |
+          source .asdf/asdf.sh
+          asdf plugin test zephyr-sdk plugin "zephyr-sdk --version"

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source $(dirname $0)/utils.bash
+
+install_toolchain() {
+  local version=$1
+  local source=$2
+  local destination=$3
+
+  tar -xf $source -C $destination --strip 1
+}
+
+maybe_install_hosttools() {
+  local version=$1
+  local source=$2
+  local destination=$3
+
+  local arch=$(get_arch)
+  local platform=$(get_platform)
+
+  if [[ $platform == "linux" ]]; then
+    tar -xf $source -C $destination
+    $destination/zephyr-sdk-$arch-hosttools-standalone-0.9.sh -y -d $destination &> /dev/null
+    rm $destination/zephyr-sdk-$arch-hosttools-standalone-0.9.sh
+  fi
+}
+
+install_tools() {
+  local source=$1
+  local destination=$2
+
+  mkdir $destination/bin/
+  cp $source/tools/* $destination/bin/
+}
+
+install_toolchain \
+  $ASDF_INSTALL_VERSION \
+  $ASDF_DOWNLOAD_PATH/zephyr-sdk-$ASDF_INSTALL_VERSION.tar.xz \
+  $ASDF_INSTALL_PATH
+
+maybe_install_hosttools \
+  $ASDF_INSTALL_VERSION \
+  $ASDF_DOWNLOAD_PATH/hosttools-$ASDF_INSTALL_VERSION.tar.xz \
+  $ASDF_INSTALL_PATH
+
+install_tools \
+  "${BASH_SOURCE[0]%/*/*}" \
+  $ASDF_INSTALL_PATH

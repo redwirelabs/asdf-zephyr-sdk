@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+print_usage() {
+  echo "Usage: $0 [--version | --toolchains]"
+  exit 1
+}
+
+if [ $# -ne 1 ]; then
+  print_usage
+fi
+
+case "$1" in
+  --version)
+    cat $ZEPHYR_SDK_INSTALL_DIR/sdk_version
+    ;;
+  --toolchains)
+    cat $ZEPHYR_SDK_INSTALL_DIR/sdk_toolchains
+    ;;
+  *)
+    print_usage
+    ;;
+esac
